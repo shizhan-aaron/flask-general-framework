@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+config/local_setting.py
+config/product_setting.py
 
 # C extensions
 *.so
