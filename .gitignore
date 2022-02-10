@@ -1,9 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+config/
 *.py[cod]
 *$py.class
-config/local_setting.py
-config/product_setting.py
 
 # C extensions
 *.so
