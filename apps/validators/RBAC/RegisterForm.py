@@ -2,7 +2,7 @@ from wtforms import StringField
 from wtforms.validators import DataRequired, Email, Length, Regexp
 
 from apps.exception.error_code import ParameterException
-from apps.models.RBAC import Users
+from apps.models.RBAC import User
 from apps.validators.BaseForm import BaseForm
 
 
@@ -16,7 +16,7 @@ class RegisterForm(BaseForm):
     enable = StringField(validators=[], default=1)
 
     def validate_account(self, value):
-        if Users.query.filter_by(account=value.data).first():
+        if User.query.filter_by(account=value.data).first():
             raise ParameterException(msg="账户重复")
 
     def validate_auth(self, value):

@@ -7,7 +7,7 @@ from apps.exception.error_code import Success, ParameterException
 from apps.libs.common.jsonify import jsonify
 from apps.libs.common.red_print import Redprint
 from apps.libs.common.token_auth import verity_auth_token
-from apps.models.RBAC import Users, Roles, MenuPermissions, FunctionalPermissions, RoleToPermission
+from apps.models.RBAC import User, Role, MenuPermission, FunctionalPermission, RoleToPermission
 from apps.models.base import db
 from apps.validators.PageForm import PageForm
 from apps.validators.RBAC.LoginForm import LoginForm
@@ -21,7 +21,7 @@ api = Redprint('user')
 def register():
     form = RegisterForm().validate_api()
     with db.auto_commit():
-        user = Users()
+        user = User()
         user.account = form.account.data
         user.password = form.password.data
         user.nickname = form.nickname.data
@@ -37,11 +37,11 @@ def register():
 @api.route("/token", methods=["POST"])
 def get_token():
     form = LoginForm().validate_api()
-    identity = Users.verity(form.account.data, form.password.data)
+    identity = User.verity(form.account.data, form.password.data)
     expiration = current_app.config["TOKEN_EXPIRATION"]
 
     with db.auto_commit():
-        user = Users.query.filter_by(id=identity["uid"]).first()
+        user = User.query.filter_by(id=identity["uid"]).first()
         user.last_login = int(datetime.datetime.now().timestamp())
 
     token = generate_auth_token(identity["uid"], expiration)
@@ -54,7 +54,9 @@ def get_token():
 def generate_auth_token(uid, expiration=3600):
     s = Serializer(secret_key=current_app.config["SECRET_KEY"],
                    expires_in=expiration)
-    return s.dumps({"uid": uid})
+    return s.dumps({
+        "uid": uid
+    })
 
 
 @api.route("/profile")
@@ -66,34 +68,31 @@ def get_user_info():
 
     # 获取用户信息
     uid = verity_auth_token(token)
-    user = Users.query.filter_by(id=uid).first()
+    user = User.query.filter_by(id=uid).first()
 
     # 获得角色信息
     role_id = user.role_id
-    role = Roles.query.filter_by(id=role_id).first()
-    role = {
-        'id': role.id,
-        'name': role.name
-    }
+    role = Role.query.filter_by(id=role_id).first()
+    role.hide('desc')
 
     # 获取权限信息
     permission = {
         'menus': [],
-        'functionals': []
+        'functional': []
     }
-    role_to_permission = RoleToPermission.query.filter_by(role_id=role_id).first()
-    if not role_to_permission:
-        raise ParameterException(msg='未获取到权限信息')
-    permissions = role_to_permission.permission_list
-    permission_list = permissions.split(',')
-    for item in permission_list:
-        if '-' in item:
-            permission_id = item.split('-')[1]
-            functional = FunctionalPermissions.query.filter_by(id=permission_id).first()
-            permission['functionals'].append(functional.mark)
-        else:
-            menu = MenuPermissions.query.filter_by(id=item).first()
-            permission['menus'].append(menu.mark)
+    # role_to_permission = RoleToPermission.query.filter_by(role_id=role_id).first()
+    # if not role_to_permission:
+    #     raise ParameterException(msg='未获取到权限信息')
+    # permissions = role_to_permission.permission_list
+    # permission_list = permissions.split(',')
+    # for item in permission_list:
+    #     if '-' in item:
+    #         permission_id = item.split('-')[1]
+    #         functional = FunctionalPermission.query.filter_by(id=permission_id).first()
+    #         permission['functional'].append(functional.mark)
+    #     else:
+    #         menu = MenuPermission.query.filter_by(id=item).first()
+    #         permission['menus'].append(menu.mark)
 
     # 拼接结果
     result = {
@@ -108,9 +107,9 @@ def user_list():
     form = PageForm().validate_api()
     result = {
         'list': [],
-        'total': Users.query.filter_by().count()
+        'total': User.query.filter_by().count()
     }
-    users = Users.query.filter_by().paginate(page=form.page.data, per_page=form.per_page.data).items
+    users = User.query.filter_by().paginate(page=form.page.data, per_page=form.per_page.data).items
     for user in users:
         user_info = {
             'id': user.id,
@@ -128,13 +127,13 @@ def user_list():
 def get_user_role(uid):
     if request.method == 'GET':
         # 获取指定用户角色
-        user = Users.query.filter_by(id=uid).first()
+        user = User.query.filter_by(id=uid).first()
         return jsonify(user.role)
     if request.method == 'PUT':
         # 为用户分配角色
         form = PutRoleForm().validate_api()
         with db.auto_commit():
-            user = Users.query.filter_by(id=uid).first()
+            user = User.query.filter_by(id=uid).first()
             user.role_id = form.id.data
-            user.updatetime = int(datetime.datetime.now().timestamp())
+            user.update_time = int(datetime.datetime.now().timestamp())
         return Success()

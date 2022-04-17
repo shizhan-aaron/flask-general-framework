@@ -6,7 +6,7 @@ from apps.exception.error_code import AuthFailed
 from apps.models.base import Base
 
 
-class Users(Base):
+class User(Base):
     """
     用户表
     """
@@ -17,8 +17,8 @@ class Users(Base):
     desc = Column(String(100), comment='描述')
     enable = Column(SmallInteger, default=1, comment="是否启用,0:未启用,1: 启用")
     last_login = Column(Integer, comment="最后登录时间")
-    role_id = Column(Integer, ForeignKey('roles.id'), comment='角色ID')
-    role = relationship('Roles', backref='users')
+    role_id = Column(Integer, ForeignKey('role.id'), comment='角色ID')
+    role = relationship('Role', backref='users')
 
     @orm.reconstructor
     def __init__(self):
@@ -45,7 +45,7 @@ class Users(Base):
 
     @staticmethod
     def verity(account, password):
-        user = Users.query.filter_by(account=account).first_or_404()
+        user = User.query.filter_by(account=account).first_or_404()
         if not user.check_password(password):
             raise AuthFailed()
         elif user.enable == 0:
@@ -53,7 +53,7 @@ class Users(Base):
         return {'uid': user.id}
 
 
-class Roles(Base):
+class Role(Base):
     """
     角色表
     """
@@ -70,7 +70,7 @@ class Roles(Base):
         ]
 
 
-class MenuPermissions(Base):
+class MenuPermission(Base):
     """
     菜单权限表
     """
@@ -89,15 +89,15 @@ class MenuPermissions(Base):
         ]
 
 
-class FunctionalPermissions(Base):
+class FunctionalPermission(Base):
     """
     功能权限表
     """
     name = Column(String(50), nullable=False, comment='名称')
     mark = Column(String(50), nullable=False, comment='标识')
     desc = Column(String(100), nullable=False, comment='描述')
-    menu_permission_id = Column(Integer, ForeignKey('menu_permissions.id'), comment='菜单权限ID')
-    menu_permission = relationship('MenuPermissions', backref='functional_permissions')
+    menu_permission_id = Column(Integer, ForeignKey('menu_permission.id'), comment='菜单权限ID')
+    menu_permission = relationship('MenuPermission', backref='functional_permission')
 
     @orm.reconstructor
     def __init__(self):
@@ -111,6 +111,7 @@ class FunctionalPermissions(Base):
 
 
 class RoleToPermission(Base):
+    """角色权限表"""
     role_id = Column(Integer, ForeignKey('roles.id'), comment='角色ID')
     permission_list = Column(String(200), comment='权限ID列表')
 

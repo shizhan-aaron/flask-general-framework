@@ -3,7 +3,7 @@ from flask import request
 from apps.exception.error_code import Success
 from apps.libs.common.jsonify import jsonify
 from apps.libs.common.red_print import Redprint
-from apps.models.RBAC import Roles, RoleToPermission
+from apps.models.RBAC import Role, RoleToPermission
 from apps.models.base import db
 from apps.validators.RBAC.DistributePermissionForm import DistributePermissionForm
 
@@ -17,7 +17,7 @@ def add_role():
 
 @api.route('/list')
 def role_list():
-    roles = Roles.query.filter_by().all()
+    roles = Role.query.filter_by().all()
     return jsonify(roles)
 
 
