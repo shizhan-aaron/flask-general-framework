@@ -3,9 +3,9 @@ from flask import request
 from apps.exception.error_code import Success
 from apps.libs.common.jsonify import jsonify
 from apps.libs.common.red_print import Redprint
-from apps.models.RBAC import Role, RoleToPermission
+from apps.models.authorization import Role, RoleToPermission
 from apps.models.base import db
-from apps.validators.RBAC.DistributePermissionForm import DistributePermissionForm
+from apps.validators.authorization.DistributePermissionForm import DistributePermissionForm
 
 api = Redprint('role')
 

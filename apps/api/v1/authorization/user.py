@@ -7,12 +7,12 @@ from apps.exception.error_code import Success, ParameterException
 from apps.libs.common.jsonify import jsonify
 from apps.libs.common.red_print import Redprint
 from apps.libs.common.token_auth import verity_auth_token
-from apps.models.RBAC import User, Role, MenuPermission, FunctionalPermission, RoleToPermission
+from apps.models.authorization import User, Role, MenuPermission, FunctionalPermission, RoleToPermission
 from apps.models.base import db
 from apps.validators.PageForm import PageForm
-from apps.validators.RBAC.LoginForm import LoginForm
-from apps.validators.RBAC.PutRoleForm import PutRoleForm
-from apps.validators.RBAC.RegisterForm import RegisterForm
+from apps.validators.authorization.LoginForm import LoginForm
+from apps.validators.authorization.PutRoleForm import PutRoleForm
+from apps.validators.authorization.RegisterForm import RegisterForm
 
 api = Redprint('user')
 

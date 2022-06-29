@@ -2,7 +2,7 @@ from wtforms import StringField
 from wtforms.validators import DataRequired, Email, Length, Regexp
 
 from apps.exception.error_code import ParameterException
-from apps.models.RBAC import User
+from apps.models.authorization import User
 from apps.validators.BaseForm import BaseForm
 
 

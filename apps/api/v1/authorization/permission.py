@@ -1,6 +1,6 @@
 from apps.libs.common.jsonify import jsonify
 from apps.libs.common.red_print import Redprint
-from apps.models.RBAC import MenuPermission
+from apps.models.authorization import MenuPermission
 
 api = Redprint('permission')
 
@@ -11,7 +11,7 @@ def permission_list():
     result = []
     for menu in menus:
         menu_dict = {
-            'id': str(menu.id),
+            'id': menu.id,
             'name': menu.name,
             'mark': menu.mark,
             'desc': menu.desc,
@@ -21,7 +21,7 @@ def permission_list():
         functional = menu.functional_permission
         for item in functional:
             functional_dict = {
-                'id': str(menu.id) + '-' + str(item.id),
+                'id': item.id,
                 'name': item.name,
                 'mark': item.mark,
                 'desc': item.desc,

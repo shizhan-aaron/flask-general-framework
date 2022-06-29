@@ -1,7 +1,7 @@
 from flask import Blueprint
-from apps.api.v1.RBAC import user
-from apps.api.v1.RBAC import permission
-from apps.api.v1.RBAC import role
+from apps.api.v1.authorization import user
+from apps.api.v1.authorization import permission
+from apps.api.v1.authorization import role
 
 
 def create_blueprint_v1():
